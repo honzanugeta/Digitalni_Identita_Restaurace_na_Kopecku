@@ -1,74 +1,208 @@
 @import "tailwindcss";
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Lato', sans-serif;
+  line-height: 1.6;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* User Defined Palette */
+  --color-orange-dark: #C75031;
+  --color-brown-dark: #362018;
+  --color-black: #050505;
+  /* Almost true black */
+  --color-white: #ffffff;
+
+  --color-primary: var(--color-orange-dark);
+  --color-secondary: var(--color-brown-dark);
+
+  --color-orange-light: #e88d75;
+  --color-brown-light: #52352b;
+
+  color: var(--color-white);
+  background-color: var(--color-black);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  cursor: none;
+  /* Hide default cursor */
 }
 
-a {
-  font-weight: 500;
-  color: #000000;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #555555;
-}
-
-html {
-  scroll-behavior: smooth;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Playfair Display', serif;
+  color: var(--color-white);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--color-black);
+  color: var(--color-white);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Noise Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #000000;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* Custom Cursor */
+.cursor-dot,
+.cursor-outline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 9999;
+  pointer-events: none;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-orange-dark);
+}
+
+.cursor-outline {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(199, 80, 49, 0.5);
+  transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+/* Hover state for cursor (add via JS or utility) */
+body:hover .cursor-outline {
+  /* Basic state */
+}
+
+/* Utilities */
+.text-accent {
+  color: var(--color-orange-dark);
+}
+
+.bg-accent {
+  background-color: var(--color-orange-dark);
+}
+
+.border-accent {
+  border-color: var(--color-orange-dark);
+}
+
+.bg-brown {
+  background-color: var(--color-brown-dark);
+}
+
+.bg-black {
+  background-color: var(--color-black);
+}
+
+/* Najebaný Effects */
+.text-glow {
+  text-shadow: 0 0 30px rgba(199, 80, 49, 0.6), 0 0 60px rgba(199, 80, 49, 0.4);
+}
+
+.box-glow {
+  box-shadow: 0 0 30px rgba(199, 80, 49, 0.15);
+}
+
+.glass-panel {
+  background: rgba(30, 20, 15, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.glass-nav {
+  background: rgba(5, 5, 5, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 3D Tilt Effect on Hover */
+.tilt-card {
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.tilt-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(199, 80, 49, 0.1);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
   }
-  a:hover {
-    color: #000000;
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 5s infinite ease-in-out;
+}
+
+/* Glitch Text Effect (Optional if we want to be edgy, maybe keep it clean luxury instead) */
+
+/* Selection */
+::selection {
+  background: var(--color-orange-dark);
+  color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brown-dark);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-orange-dark);
 }
