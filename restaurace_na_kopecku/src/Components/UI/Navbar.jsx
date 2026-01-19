@@ -45,11 +45,7 @@ export default function Navbar() {
             </li>
           ))}
           {/* CTA Button in Navbar */}
-          <li>
-            <a href="#rezervace" className="px-5 py-2 border border-accent text-accent text-xs uppercase tracking-widest hover:bg-accent hover:text-white transition-all duration-300">
-              Rezervovat Stůl
-            </a>
-          </li>
+         
         </ul>
 
         {/* Hamburger (Mobile) */}

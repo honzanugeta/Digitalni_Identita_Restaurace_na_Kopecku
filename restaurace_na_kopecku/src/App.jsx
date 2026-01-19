@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import Navbar from "./Components/UI/Navbar.jsx";
 import Footer from "./Components/UI/Footer.jsx";
 import MapEmbed from "./Components/MapEmbed.jsx";
+import Mojito from './assets/MojitoRestauraceNaKopečku.jpg';
+import Sal from './assets/SalRestauraceNaKopečku.jpg';
 
 function App() {
   const cursorDot = useRef(null);
@@ -44,8 +46,7 @@ function App() {
       {/* HERO SECTION */}
       <section id="domu" className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background with overlay */}
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-no-repeat scale-110 motion-safe:animate-pulse-slow origin-center">
-          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 motion-safe:animate-pulse-slow origin-center" style={{ backgroundImage: `url(${Mojito})` }}>          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black"></div>
         </div>
 
@@ -89,7 +90,7 @@ function App() {
           <div className="order-2 lg:order-1 relative group pl-0 md:pl-10">
             <div className="absolute -inset-10 bg-gradient-to-tr from-accent/20 to-transparent blur-3xl opacity-40"></div>
             <div className="relative z-10 transform md:-rotate-3 hover:rotate-0 transition-transform duration-1000 ease-in-out">
-              <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Chef" className="w-full h-auto grayscale hover:grayscale-0 transition-all duration-1000 shadow-2xl object-cover rounded-sm" />
+              <img src={Sal} alt="Chef" className="w-full h-auto grayscale hover:grayscale-0 transition-all duration-1000 shadow-2xl object-cover rounded-sm" />
               <div className="hidden md:flex absolute -bottom-10 -right-10 w-32 h-32 md:w-40 md:h-40 bg-accent/10 backdrop-blur-md border border-white/10 items-center justify-center rounded-full">
                 <span className="font-serif italic text-xl md:text-2xl text-accent">Passion</span>
               </div>
@@ -132,7 +133,7 @@ function App() {
                 name: "Orange Chicken",
                 desc: "Křupavé kousky kuřete v sladkokyselé pomerančové omáčce, jasmínová rýže.",
                 price: "269",
-                img: "https://images.unsplash.com/photo-1525351326368-efbb5cb6808d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                img: "https://media.istockphoto.com/id/492023021/photo/chinese-orange-chicken-with-chopsticks.jpg?s=612x612&w=0&k=20&c=lerAHdsLQh0OghzMt7n_fKER2y2enB1Djnss_Wpaj6s="
               },
               {
                 name: "Bun Bo Nam Bo",
@@ -144,25 +145,25 @@ function App() {
                 name: "Pho Bo",
                 desc: "Tradiční silný hovězí vývar, rýžové nudle, plátky masa, čerstvé bylinky.",
                 price: "279",
-                img: "https://images.unsplash.com/photo-1582878826618-c053af6b2c31?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                img: "https://media.istockphoto.com/id/1462352351/photo/pho.jpg?s=612x612&w=0&k=20&c=TaNeUcQyazuboL2g6sC_EMzuF9ZvW9xPvDL6FZgWKVM="
               },
               {
                 name: "Bun Cha",
                 desc: "Grilované vepřové s rýžovými nudlemi a čerstvými bylinkami ve sladkokyselé zálivce.",
                 price: "289",
-                img: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                img: "https://media.istockphoto.com/id/888740900/photo/bun-cha-or-vietnamese-cold-white-rice-noodles-served-with-grilled-pork-and-a-variety-of-herbs.jpg?s=612x612&w=0&k=20&c=-2lPw2IeUNnNtFSKcg5YVo0GOYMPy4_G7cxj2UrtdGM="
               },
               {
                 name: "Com Tam",
                 desc: "Lámaná rýže s marinovanou krkovicí, vaječnou sedlinou a nakládanou zeleninou.",
                 price: "279",
-                img: "https://images.unsplash.com/photo-1596561346513-d423985392d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                img: "https://media.istockphoto.com/id/2049290538/photo/close-up-of-com-tam-or-vietnamese-broken-rice.jpg?s=612x612&w=0&k=20&c=8WEzQLJQI1aMinXEQ7kR-KmxvlLvTZGgcI53eYt2VU0="
               },
               {
                 name: "Zavitky",
                 desc: "Mix čerstvých letních a smažených jarních závitků se sladkokyselou omáčkou.",
                 price: "189",
-                img: "https://images.unsplash.com/photo-1544073099-0524ce8c7a6e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                img: "https://cdn.administrace.tv/2022/08/07/hd/9ff4384829f45090a8b4d88bd594c984.jpg"
               }
             ].map((item, i) => (
               <div key={i} className="group relative h-[400px] overflow-hidden border border-white/10 rounded-sm cursor-none tilt-card">
@@ -200,17 +201,17 @@ function App() {
             <p className="text-gray-400 text-base md:text-xl mb-12 md:mb-16 max-w-2xl mx-auto font-light leading-relaxed">
               Pro zajištění absolutní péče přijímáme rezervace výhradně telefonicky.
             </p>
-
-            <a href="tel:+420123456789" className="group block relative z-10 transition-transform duration-500 hover:scale-105">
-              <div className="text-4xl md:text-8xl lg:text-9xl font-serif italic text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 group-hover:from-accent group-hover:to-orange-600 transition-all duration-500 md:cursor-none break-all sm:break-normal">
-                +420 123 456 789
-              </div>
+            <div className="flex justify-center items-center w-full px-4">
+            <a href="tel:+420775059591" className="group relative z-10 transition-transform duration-500 hover:scale-105 inline-block text-4xl md:text-8xl lg:text-9xl font-montserrat font-bold whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 group-hover:from-accent group-hover:to-orange-600 transition-all duration-500 md:cursor-none">
+            +420 775 059 591
+  
               <div className="mt-8 flex items-center justify-center gap-4 text-[10px] md:text-xs text-gray-500 uppercase tracking-[0.4em] group-hover:text-white transition-colors">
                 <span className="w-4 md:w-8 h-[1px] bg-accent"></span>
                 Zavolejte Nám
                 <span className="w-4 md:w-8 h-[1px] bg-accent"></span>
               </div>
             </a>
+            </div>
           </div>
 
         </div>
@@ -231,26 +232,57 @@ function App() {
           {/* Info Container */}
           <div className="flex flex-col justify-center p-10 md:p-12 lg:p-32 bg-[#080808]">
             <span className="text-accent font-bold tracking-[0.4em] uppercase text-xs mb-8 block">Kontakt</span>
-            <h2 className="text-5xl md:text-6xl font-serif text-white mb-12">Visit Us</h2>
+            <h2 className="text-5xl md:text-6xl font-serif text-white mb-12">Navštivte nás
+            </h2>
 
             <div className="grid gap-12 md:gap-16">
-              <div className="group">
-                <h4 className="text-gray-600 uppercase tracking-widest text-xs mb-4">Adresa</h4>
-                <p className="text-xl md:text-2xl text-white font-serif italic group-hover:text-accent transition-colors duration-300">Restaurace Na Kopečku 55<br />123 45, Horní Dolní</p>
-              </div>
+  {/* Adresa Section */}
+  <div className="group">
+    <h4 className="text-accent uppercase tracking-[0.2em] text-sm mb-4 font-bold">
+      Adresa
+    </h4>
+    <p className="text-xl md:text-2xl text-white font-semibold group-hover:text-accent transition-colors duration-300 leading-relaxed">
+      Kočkovská 2579, <br />
+      400 11 Ústí nad Labem-Severní Terasa
+    </p>
+  </div>
+  {(() => {
+  const day = new Date().getDay(); // 0 = Neděle, 1 = Pondělí, atd.
+  const isMon = day === 1;
+  const isTueToThu = day >= 2 && day <= 4;
+  const isFriToSat = day === 5 || day === 6;
+  const isSun = day === 0;
 
-              <div className="group">
-                <h4 className="text-gray-600 uppercase tracking-widest text-xs mb-4">Otevírací Doba</h4>
-                <ul className="text-lg md:text-xl text-gray-300 space-y-2 font-light">
-                  <li className="flex justify-between w-full max-w-sm border-b border-white/5 pb-2"><span>Po - Čt</span> <span>11:00 - 22:00</span></li>
-                  <li className="flex justify-between w-full max-w-sm border-b border-white/5 pb-2 text-white font-medium"><span>Pá - So</span> <span>11:00 - 23:00</span></li>
-                  <li className="flex justify-between w-full max-w-sm pb-2"><span>Ne</span> <span>11:00 - 21:00</span></li>
-                </ul>
-              </div>
+  return (
+    <div className="group font-montserrat">
+      <h4 className="text-accent uppercase tracking-[0.2em] text-sm mb-6 font-bold">
+        Otevírací Doba
+      </h4>
+      <ul className="text-base md:text-lg text-white/80 space-y-4 font-semibold max-w-sm">
+        <li className={`flex justify-between border-b border-white/10 pb-2 ${isMon ? 'text-accent font-bold' : ''}`}>
+          <span className={isMon ? 'text-accent' : 'text-white/50'}>Pondělí</span>
+          <span className="uppercase text-sm tracking-wider">Zavřeno</span>
+        </li>
+        <li className={`flex justify-between border-b border-white/10 pb-2 ${isTueToThu ? 'text-accent font-bold' : ''}`}>
+          <span>Úterý — Čtvrtek</span>
+          <span>12:00 — 22:00</span>
+        </li>
+        <li className={`flex justify-between border-b border-white/10 pb-2 ${isFriToSat ? 'text-accent font-bold' : ''}`}>
+          <span>Pátek — Sobota</span>
+          <span>12:00 — 23:00</span>
+        </li>
+        <li className={`flex justify-between pb-2 ${isSun ? 'text-accent font-bold' : ''}`}>
+          <span>Neděle</span>
+          <span>12:00 — 20:00</span>
+        </li>
+      </ul>
+    </div>
+  );
+})()}
 
               <div className="group">
                 <h4 className="text-gray-600 uppercase tracking-widest text-xs mb-4">Napište Nám</h4>
-                <a href="mailto:info@nakopecku.cz" className="text-xl text-white hover:text-accent transition-colors border-b border-white/20 pb-1 break-all">info@nakopecku.cz</a>
+                <a href="mailto:Eva.96.le@gmail.com" className="text-xl text-white hover:text-accent transition-colors border-b border-white/20 pb-1 break-all">Eva.96.le@gmail.com</a>
               </div>
             </div>
           </div>
