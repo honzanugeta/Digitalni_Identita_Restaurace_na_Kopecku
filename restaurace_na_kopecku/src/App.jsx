@@ -2,8 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import Navbar from "./Components/UI/Navbar.jsx";
 import Footer from "./Components/UI/Footer.jsx";
 import MapEmbed from "./Components/MapEmbed.jsx";
-import Mojito from './assets/MojitoRestauraceNaKopečku.jpg';
-import Sal from './assets/SalRestauraceNaKopečku.jpg';
+import Mojito from './assets/MojitoRestauraceNaKopecku.jpg';
+import Sal from './assets/SalRestauraceNaKopecku.jpg';
 
 function App() {
   const cursorDot = useRef(null);

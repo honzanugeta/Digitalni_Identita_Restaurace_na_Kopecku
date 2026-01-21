@@ -80,9 +80,7 @@ export default function Navbar() {
             {l.label}
           </a>
         ))}
-        <a href="#rezervace" onClick={() => setOpen(false)} className="mt-8 px-8 py-3 border border-accent text-accent uppercase tracking-widest hover:bg-accent hover:text-white transition-all">
-          Rezervace
-        </a>
+        
       </div>
     </nav>
   );
