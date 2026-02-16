@@ -27,8 +27,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  cursor: none;
-  /* Hide default cursor */
+  /* cursor: none; - Removed to prevent disappearing cursor on pages without custom cursor logic */
 }
 
 h1,
@@ -88,10 +87,7 @@ body {
   transition: width 0.2s, height 0.2s, background-color 0.2s;
 }
 
-/* Hover state for cursor (add via JS or utility) */
-body:hover .cursor-outline {
-  /* Basic state */
-}
+
 
 /* Utilities */
 .text-accent {

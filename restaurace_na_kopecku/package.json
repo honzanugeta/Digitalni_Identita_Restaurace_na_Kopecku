@@ -10,10 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/vite": "^4.1.14",
+    "heic2any": "^0.0.4",
+    "node.js": "^0.0.1-security",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.4",
+    "react-router-dom": "^7.13.0",
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {

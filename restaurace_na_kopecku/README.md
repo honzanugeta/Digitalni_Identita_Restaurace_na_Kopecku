@@ -1,16 +1,125 @@
-# React + Vite
+# Restaurace na Kopečku
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Moderní webová stránka pro restauraci Na Kopečku - asijská fúze v Ústí nad Labem.
 
-Currently, two official plugins are available:
+## Technologie
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** - Moderní React s nejnovějšími funkcemi
+- **Vite** - Rychlý build tool a dev server
+- **Tailwind CSS 4** - Utility-first CSS framework
+- **Supabase** - Auth + databáze + nastavení
+- **React Router** - Routing pro veřejný web a admin
+- **ESLint** - Linting pro kvalitní kód
 
-## React Compiler
+## Instalace
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+```
 
-## Expanding the ESLint configuration
+## Supabase nastavení
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Vytvořte projekt v Supabase a v **SQL editoru** spusťte:
+
+```sql
+create table menu_items (
+  id bigint generated always as identity primary key,
+  name text not null,
+  description text,
+  price numeric(10,2),
+  image_url text,
+  is_visible boolean default true
+);
+
+create table settings (
+  id bigint generated always as identity primary key,
+  key text unique not null,
+  value jsonb not null
+);
+```
+
+V kořeni projektu vytvořte `.env` soubor:
+
+```bash
+VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+
+V Supabase v sekci **Auth → Users** založte admin uživatele (email + heslo), kterým se přihlásíte do `/login`.
+
+### Bezpečnost (RLS)
+
+Pro produkční nasazení doporučujeme:
+
+- Zapnout **Row Level Security (RLS)** pro tabulky `menu_items` a `settings`.
+- Přidat politiky, které:
+  - Povolit **SELECT** všem uživatelům (veřejné čtení menu a nastavení).
+  - Povolit **INSERT/UPDATE/DELETE** pouze přihlášeným adminům (např. podle emailu / role).
+
+
+## Vývoj
+
+Spusťte vývojový server:
+
+```bash
+npm run dev
+```
+
+Aplikace bude dostupná na `http://localhost:5173`
+
+## Build
+
+Pro produkční build:
+
+```bash
+npm run build
+```
+
+Výstup bude v adresáři `dist/`.
+
+## Preview produkčního buildu
+
+```bash
+npm run preview
+```
+
+## Linting
+
+```bash
+npm run lint
+```
+
+## Docker
+
+Pro build Docker image:
+
+```bash
+docker build -t restaurace-na-kopecku .
+```
+
+Pro spuštění:
+
+```bash
+docker run -p 80:80 restaurace-na-kopecku
+```
+
+## Struktura projektu
+
+```
+src/
+├── Components/
+│   ├── UI/
+│   │   ├── Navbar.jsx
+│   │   └── Footer.jsx
+│   └── MapEmbed.jsx
+├── assets/
+├── App.jsx
+├── main.jsx
+└── index.css
+```
+
+## Kontakt
+
+- **Telefon:** +420 775 059 591
+- **Email:** Eva.96.le@gmail.com
+- **Adresa:** Kočkovská 2579, 400 11 Ústí nad Labem-Severní Terasa
