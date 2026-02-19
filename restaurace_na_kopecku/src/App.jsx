@@ -1,11 +1,68 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Navbar from "./Components/UI/Navbar.jsx";
 import Footer from "./Components/UI/Footer.jsx";
 import MapEmbed from "./Components/MapEmbed.jsx";
+import Mojito from './assets/MojitoRestauraceNaKopecku.jpg';
+import Sal from './assets/SalRestauraceNaKopecku.jpg';
+import { supabase } from './supabaseClient.js';
+import { groupOpeningHours } from './utils/openingHours.js';
+
+const FALLBACK_MENU = [
+  {
+    name: "Orange Chicken",
+    description: "Křupavé kousky kuřete v sladkokyselé pomerančové omáčce, jasmínová rýže.",
+    price: 269,
+    image_url: "https://media.istockphoto.com/id/492023021/photo/chinese-orange-chicken-with-chopsticks.jpg?s=612x612&w=0&k=20&c=lerAHdsLQh0OghzMt7n_fKER2y2enB1Djnss_Wpaj6s="
+  },
+  {
+    name: "Bun Bo Nam Bo",
+    description: "Vietnamský nudlový salát s hovězím masem, bylinkami a arašídy.",
+    price: 289,
+    image_url: "https://images.unsplash.com/photo-1503764654157-72d979d9af2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Pho Bo",
+    description: "Tradiční silný hovězí vývar, rýžové nudle, plátky masa, čerstvé bylinky.",
+    price: 279,
+    image_url: "https://media.istockphoto.com/id/1462352351/photo/pho.jpg?s=612x612&w=0&k=20&c=TaNeUcQyazuboL2g6sC_EMzuF9ZvW9xPvDL6FZgWKVM="
+  },
+  {
+    name: "Bun Cha",
+    description: "Grilované vepřové s rýžovými nudlemi a čerstvými bylinkami ve sladkokyselé zálivce.",
+    price: 289,
+    image_url: "https://media.istockphoto.com/id/888740900/photo/bun-cha-or-vietnamese-cold-white-rice-noodles-served-with-grilled-pork-and-a-variety-of-herbs.jpg?s=612x612&w=0&k=20&c=-2lPw2IeUNnNtFSKcg5YVo0GOYMPy4_G7cxj2UrtdGM="
+  },
+  {
+    name: "Com Tam",
+    description: "Lámaná rýže s marinovanou krkovicí, vaječnou sedlinou a nakládanou zeleninou.",
+    price: 279,
+    image_url: "https://media.istockphoto.com/id/2049290538/photo/close-up-of-com-tam-or-vietnamese-broken-rice.jpg?s=612x612&w=0&k=20&c=8WEzQLJQI1aMinXEQ7kR-KmxvlLvTZGgcI53eYt2VU0="
+  },
+  {
+    name: "Zavitky",
+    description: "Mix čerstvých letních a smažených jarních závitků se sladkokyselou omáčkou.",
+    price: 189,
+    image_url: "https://cdn.administrace.tv/2022/08/07/hd/9ff4384829f45090a8b4d88bd594c984.jpg"
+  }
+];
+
+const DEFAULT_HOURS = {
+  monday: { open: null, close: null },
+  tuesday: { open: '12:00', close: '22:00' },
+  wednesday: { open: '12:00', close: '22:00' },
+  thursday: { open: '12:00', close: '22:00' },
+  friday: { open: '12:00', close: '23:00' },
+  saturday: { open: '12:00', close: '23:00' },
+  sunday: { open: '12:00', close: '20:00' },
+};
 
 function App() {
   const cursorDot = useRef(null);
   const cursorOutline = useRef(null);
+  const [menuItems, setMenuItems] = useState(FALLBACK_MENU);
+  const [openingHours, setOpeningHours] = useState(DEFAULT_HOURS);
+  const [popup, setPopup] = useState(null);
+  const [popupHidden, setPopupHidden] = useState(false);
 
   useEffect(() => {
     // Only run custom cursor logic on non-touch devices to prevent mobile issues
@@ -30,6 +87,55 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!supabase) return
+
+    const loadData = async () => {
+      try {
+        const [{ data: items }, { data: settings }] = await Promise.all([
+          supabase.from('menu_items').select('*').eq('is_visible', true).order('id'),
+          supabase.from('settings').select('*'),
+        ]);
+
+        if (items && items.length > 0) {
+          const mapped = items.map((item) => ({
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            image_url: item.image_url,
+          }));
+          setMenuItems(mapped);
+        }
+
+        if (settings && settings.length > 0) {
+          const popupSetting = settings.find((s) => s.key === 'popup');
+          const hoursSetting = settings.find((s) => s.key === 'opening_hours');
+
+          if (popupSetting?.value?.active) {
+            setPopup({
+              title: popupSetting.value.title ?? '',
+              message: popupSetting.value.message ?? '',
+            });
+            setPopupHidden(false);
+          } else {
+            setPopup(null);
+          }
+
+          if (hoursSetting?.value) {
+            setOpeningHours({ ...DEFAULT_HOURS, ...hoursSetting.value });
+          }
+        }
+      } catch {
+        // tichý fallback na lokální data
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // Use the helper to group days dynamically based on current data
+  const groupedHours = groupOpeningHours(openingHours);
+
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-accent selection:text-white cursor-auto md:cursor-none">
       {/* Custom Cursor Elements - Hidden on touch devices via CSS media query usually, or JS check above */}
@@ -39,13 +145,33 @@ function App() {
       {/* Noise Overlay */}
       <div className="noise-overlay z-50"></div>
 
+      {/* Popup / novinka */}
+      {popup && !popupHidden && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 px-4">
+          <div className="glass-panel px-6 py-4 border border-accent/40 max-w-md mx-auto text-center relative">
+            <button
+              type="button"
+              aria-label="Zavřít"
+              className="absolute top-2 right-2 text-xs text-gray-400 hover:text-white"
+              onClick={() => setPopupHidden(true)}
+            >
+              ×
+            </button>
+            <p className="text-xs uppercase tracking-[0.3em] text-accent mb-2">
+              Novinka
+            </p>
+            <h3 className="text-lg font-serif mb-2">{popup.title}</h3>
+            <p className="text-sm text-gray-300">{popup.message}</p>
+          </div>
+        </div>
+      )}
+
       <Navbar />
 
       {/* HERO SECTION */}
       <section id="domu" className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background with overlay */}
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-no-repeat scale-110 motion-safe:animate-pulse-slow origin-center">
-          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 motion-safe:animate-pulse-slow origin-center" style={{ backgroundImage: `url(${Mojito})` }}>          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black"></div>
         </div>
 
@@ -89,7 +215,7 @@ function App() {
           <div className="order-2 lg:order-1 relative group pl-0 md:pl-10">
             <div className="absolute -inset-10 bg-gradient-to-tr from-accent/20 to-transparent blur-3xl opacity-40"></div>
             <div className="relative z-10 transform md:-rotate-3 hover:rotate-0 transition-transform duration-1000 ease-in-out">
-              <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Chef" className="w-full h-auto grayscale hover:grayscale-0 transition-all duration-1000 shadow-2xl object-cover rounded-sm" />
+              <img src={Sal} alt="Chef" className="w-full h-auto grayscale hover:grayscale-0 transition-all duration-1000 shadow-2xl object-cover rounded-sm" />
               <div className="hidden md:flex absolute -bottom-10 -right-10 w-32 h-32 md:w-40 md:h-40 bg-accent/10 backdrop-blur-md border border-white/10 items-center justify-center rounded-full">
                 <span className="font-serif italic text-xl md:text-2xl text-accent">Passion</span>
               </div>
@@ -127,47 +253,10 @@ function App() {
 
           {/* Image Grid Menu */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {[
-              {
-                name: "Orange Chicken",
-                desc: "Křupavé kousky kuřete v sladkokyselé pomerančové omáčce, jasmínová rýže.",
-                price: "269",
-                img: "https://images.unsplash.com/photo-1525351326368-efbb5cb6808d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-              },
-              {
-                name: "Bun Bo Nam Bo",
-                desc: "Vietnamský nudlový salát s hovězím masem, bylinkami a arašídy.",
-                price: "289",
-                img: "https://images.unsplash.com/photo-1503764654157-72d979d9af2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-              },
-              {
-                name: "Pho Bo",
-                desc: "Tradiční silný hovězí vývar, rýžové nudle, plátky masa, čerstvé bylinky.",
-                price: "279",
-                img: "https://images.unsplash.com/photo-1582878826618-c053af6b2c31?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-              },
-              {
-                name: "Bun Cha",
-                desc: "Grilované vepřové s rýžovými nudlemi a čerstvými bylinkami ve sladkokyselé zálivce.",
-                price: "289",
-                img: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-              },
-              {
-                name: "Com Tam",
-                desc: "Lámaná rýže s marinovanou krkovicí, vaječnou sedlinou a nakládanou zeleninou.",
-                price: "279",
-                img: "https://images.unsplash.com/photo-1596561346513-d423985392d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-              },
-              {
-                name: "Zavitky",
-                desc: "Mix čerstvých letních a smažených jarních závitků se sladkokyselou omáčkou.",
-                price: "189",
-                img: "https://images.unsplash.com/photo-1544073099-0524ce8c7a6e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-              }
-            ].map((item, i) => (
+            {menuItems.map((item, i) => (
               <div key={i} className="group relative h-[400px] overflow-hidden border border-white/10 rounded-sm cursor-none tilt-card">
                 {/* Image Background */}
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: `url(${item.img})` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: `url(${item.image_url})` }}></div>
 
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-80"></div>
@@ -176,10 +265,17 @@ function App() {
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
                   <h3 className="text-3xl font-serif text-white mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 font-bold">{item.name}</h3>
                   <div className="w-12 h-1 bg-accent mb-4 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                  <p className="text-gray-300 text-sm mb-6 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100 font-light leading-relaxed">
-                    {item.desc}
-                  </p>
-                  <span className="text-2xl text-accent font-bold">{item.price} <span className="text-sm font-normal text-white">CZK</span></span>
+                  {item.description && (
+                    <p className="text-gray-300 text-sm mb-6 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100 font-light leading-relaxed">
+                      {item.description}
+                    </p>
+                  )}
+                  {item.price != null && (
+                    <span className="text-2xl text-accent font-bold">
+                      {item.price}{' '}
+                      <span className="text-sm font-normal text-white">CZK</span>
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -200,17 +296,17 @@ function App() {
             <p className="text-gray-400 text-base md:text-xl mb-12 md:mb-16 max-w-2xl mx-auto font-light leading-relaxed">
               Pro zajištění absolutní péče přijímáme rezervace výhradně telefonicky.
             </p>
+            <div className="flex justify-center items-center w-full px-4">
+              <a href="tel:+420775059591" className="group relative z-10 transition-transform duration-500 hover:scale-105 inline-block text-4xl md:text-8xl lg:text-9xl font-montserrat font-bold whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 group-hover:from-accent group-hover:to-orange-600 transition-all duration-500 md:cursor-none">
+                +420 775 059 591
 
-            <a href="tel:+420123456789" className="group block relative z-10 transition-transform duration-500 hover:scale-105">
-              <div className="text-4xl md:text-8xl lg:text-9xl font-serif italic text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 group-hover:from-accent group-hover:to-orange-600 transition-all duration-500 md:cursor-none break-all sm:break-normal">
-                +420 123 456 789
-              </div>
-              <div className="mt-8 flex items-center justify-center gap-4 text-[10px] md:text-xs text-gray-500 uppercase tracking-[0.4em] group-hover:text-white transition-colors">
-                <span className="w-4 md:w-8 h-[1px] bg-accent"></span>
-                Zavolejte Nám
-                <span className="w-4 md:w-8 h-[1px] bg-accent"></span>
-              </div>
-            </a>
+                <div className="mt-8 flex items-center justify-center gap-4 text-[10px] md:text-xs text-gray-500 uppercase tracking-[0.4em] group-hover:text-white transition-colors">
+                  <span className="w-4 md:w-8 h-[1px] bg-accent"></span>
+                  Zavolejte Nám
+                  <span className="w-4 md:w-8 h-[1px] bg-accent"></span>
+                </div>
+              </a>
+            </div>
           </div>
 
         </div>
@@ -231,33 +327,51 @@ function App() {
           {/* Info Container */}
           <div className="flex flex-col justify-center p-10 md:p-12 lg:p-32 bg-[#080808]">
             <span className="text-accent font-bold tracking-[0.4em] uppercase text-xs mb-8 block">Kontakt</span>
-            <h2 className="text-5xl md:text-6xl font-serif text-white mb-12">Visit Us</h2>
+            <h2 className="text-5xl md:text-6xl font-serif text-white mb-12">Navštivte nás
+            </h2>
 
             <div className="grid gap-12 md:gap-16">
+              {/* Adresa Section */}
               <div className="group">
-                <h4 className="text-gray-600 uppercase tracking-widest text-xs mb-4">Adresa</h4>
-                <p className="text-xl md:text-2xl text-white font-serif italic group-hover:text-accent transition-colors duration-300">Restaurace Na Kopečku 55<br />123 45, Horní Dolní</p>
+                <h4 className="text-accent uppercase tracking-[0.2em] text-sm mb-4 font-bold">
+                  Adresa
+                </h4>
+                <p className="text-xl md:text-2xl text-white font-semibold group-hover:text-accent transition-colors duration-300 leading-relaxed">
+                  Kočkovská 2579, <br />
+                  400 11 Ústí nad Labem-Severní Terasa
+                </p>
               </div>
-
-              <div className="group">
-                <h4 className="text-gray-600 uppercase tracking-widest text-xs mb-4">Otevírací Doba</h4>
-                <ul className="text-lg md:text-xl text-gray-300 space-y-2 font-light">
-                  <li className="flex justify-between w-full max-w-sm border-b border-white/5 pb-2"><span>Po - Čt</span> <span>11:00 - 22:00</span></li>
-                  <li className="flex justify-between w-full max-w-sm border-b border-white/5 pb-2 text-white font-medium"><span>Pá - So</span> <span>11:00 - 23:00</span></li>
-                  <li className="flex justify-between w-full max-w-sm pb-2"><span>Ne</span> <span>11:00 - 21:00</span></li>
+              <div className="group font-montserrat">
+                <h4 className="text-accent uppercase tracking-[0.2em] text-sm mb-6 font-bold">
+                  Otevírací Doba
+                </h4>
+                <ul className="text-base md:text-lg text-white/80 space-y-4 font-semibold max-w-sm">
+                  {groupedHours.map((group, index) => (
+                    <li
+                      key={index}
+                      className={`flex justify-between border-b border-white/10 pb-2
+                        ${group.isClosed ? 'text-white/40 text-sm' : ''}
+                        ${group.isToday && !group.isClosed ? 'text-accent font-bold' : ''}`}
+                    >
+                      <span className={group.isToday && !group.isClosed ? 'text-accent' : (group.isClosed ? 'text-white/50' : '')}>
+                        {group.label}
+                      </span>
+                      <span className="uppercase tracking-wider">{group.time}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
               <div className="group">
                 <h4 className="text-gray-600 uppercase tracking-widest text-xs mb-4">Napište Nám</h4>
-                <a href="mailto:info@nakopecku.cz" className="text-xl text-white hover:text-accent transition-colors border-b border-white/20 pb-1 break-all">info@nakopecku.cz</a>
+                <a href="mailto:Eva.96.le@gmail.com" className="text-xl text-white hover:text-accent transition-colors border-b border-white/20 pb-1 break-all">Eva.96.le@gmail.com</a>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <Footer />
+      <Footer openingHours={openingHours} />
     </div>
   );
 }
