@@ -170,10 +170,19 @@ function App() {
 
       {/* HERO SECTION */}
       <section id="domu" className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background with overlay */}
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 motion-safe:animate-pulse-slow origin-center" style={{ backgroundImage: `url(${Mojito})` }}>          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black"></div>
+        {/* Background Video */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <iframe
+            className="absolute top-1/2 left-1/2 w-[100vw] h-[56.25vw] min-h-[100vh] min-w-[177.77vh] -translate-x-1/2 -translate-y-1/2"
+            src="https://www.youtube.com/embed/B2XZ9GLxjXA?autoplay=1&mute=1&loop=1&playlist=B2XZ9GLxjXA&controls=0&showinfo=0&rel=0&playsinline=1&modestbranding=1"
+            title="Promo Video"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          ></iframe>
         </div>
+        {/* Overlays */}
+        <div className="absolute inset-0 z-0 bg-black/40 mix-blend-multiply pointer-events-none"></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/80 via-transparent to-black pointer-events-none"></div>
 
         <div className="relative z-10 text-center px-4 max-w-7xl mx-auto flex flex-col items-center gap-6 md:gap-10 pt-20">
           <div className="animate-fade-in-up flex flex-col items-center gap-4">
